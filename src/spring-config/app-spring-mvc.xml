@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:util="http://www.springframework.org/schema/util"  
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd ">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing 
+		infrastructure -->
+
+	<!-- Scans within the base package of the application for @Components to 
+		configure as beans -->
+	<!-- @Controller, @Service, @Configuration, etc. -->
+	<context:component-scan
+		base-package="cn.com.widemex.streetDiscount.shopPlatform.controller" />
+
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<mvc:annotation-driven />
+
+	<mvc:interceptors>
+
+		<mvc:interceptor>
+
+			<mvc:mapping path="/doChangeLocale*" />
+			<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+				<property name="paramName" value="locale" />
+			</bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+		<property name="defaultLocale" value="en" />
+	</bean>
+
+
+  <!-- 全局异常配置 start -->    
+     <bean id="exceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">    
+         <property name="exceptionMappings">    
+             <props>    
+                 <prop key="cn.com.widemex.streetDiscount.shopPlatform.exception.AppSecurityException">errors/security</prop>
+                 <prop key="cn.com.widemex.streetDiscount.shopPlatform.exception.SensitiveWordException">errors/sensitive</prop>  
+             </props>    
+         </property>    
+         <property name="statusCodes">    
+             <props>    
+                 <prop key="errors/security">420</prop>
+                 <prop key="errors/sensitive">421</prop>      
+             </props>    
+         </property>    
+         <!-- 设置日志输出级别，不定义则默认不输出警告等错误日志信息 -->    
+         <property name="warnLogCategory" value="WARN" />    
+         <!-- 默认错误页面，当找不到上面mappings中指定的异常对应视图时，使用本默认配置 -->    
+         <property name="defaultErrorView" value="errors/500" />    
+         <!-- 默认HTTP状态码 -->    
+         <property name="defaultStatusCode" value="500" />    
+     </bean>    
+     <!-- 全局异常配置 end -->    
+
+    <!-- 文件上传表单的视图解析器 -->  
+    <bean id="multipartResolver"    
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver">       
+    </bean>    
+
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	  <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />  
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" >  
+        <property name="messageConverters">  
+            <util:list id="beanList">  
+                <bean  
+                    class="org.springframework.http.converter.StringHttpMessageConverter">  
+                    <property name="supportedMediaTypes">  
+                        <list>  
+                            <value>text/plain;charset=UTF-8</value>  
+                        </list>  
+                    </property>  
+                </bean>  
+                <ref bean="mappingJacksonHttpMessageConverter"/>  
+            </util:list>  
+        </property>  
+    </bean>  
+    <bean id="mappingJacksonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">  
+        <property name="supportedMediaTypes">  
+            <list>  
+                <value>text/html;charset=UTF-8</value>  
+            </list>  
+        </property>  
+    </bean>  
+	
+    <!-- 
+	<mvc:interceptors>
+	<bean class="cn.com.widemex.streetDiscount.shopPlatform.controller.interceptor.SystemInterceptor"></bean>
+	
+	</mvc:interceptors>
+	 -->
+
+</beans>
